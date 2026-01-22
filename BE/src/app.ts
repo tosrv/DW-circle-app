@@ -1,15 +1,17 @@
 import express, { json } from "express";
-import dotenv from "dotenv";
 import path from "path";
-import { allowCors } from "./middleawares/cors";
 import cookieParser from "cookie-parser";
+
+import { allowCors } from "./middleawares/cors";
 import { errorHandler } from "./middleawares/error";
 
-import authRouter from "./features/auth/auth.controller"
+import authRouter from "./routes/auth";
+import userRouter from "./routes/user";
+import threadsRouter from "./routes/thread";
+import likeRouter from "./routes/like";
+import replyRouter from "./routes/replies";
 
-dotenv.config();
 const app = express();
-const port = process.env.PORT;
 
 app.use(allowCors);
 app.use(json());
@@ -20,9 +22,9 @@ app.get("/", (req, res) => {
   res.send("Hello");
 });
 
-app.use("/api", authRouter)
+app.use("/api", authRouter, userRouter, threadsRouter, likeRouter, replyRouter);
 
 // Global error handler
 app.use(errorHandler);
 
-app.listen(port, () => console.log("Server is running"));
+export default app;

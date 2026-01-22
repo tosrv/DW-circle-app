@@ -10,7 +10,7 @@ datasource db {
 model Users {
   id            Int     @id @default(autoincrement())
   username      String  @unique
-  full_name     String 
+  full_name     String
   email         String  @unique
   password      String
   photo_profile String?
@@ -44,16 +44,16 @@ model Following {
   follower  Users @relation("UserFollowing", fields: [follower_id], references: [id])
 
   created_at DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  updated_at DateTime @updatedAt
 
   @@unique([following_id, follower_id])
 }
 
 model Threads {
-  id                Int     @id @default(autoincrement())
+  id                Int      @id @default(autoincrement())
   content           String
-  image             String?
-  number_of_replies Int
+  images            String[]
+  number_of_replies Int?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -89,9 +89,9 @@ model Likes {
 }
 
 model Replies {
-  id      Int     @id @default(autoincrement())
+  id      Int      @id @default(autoincrement())
   content String
-  image   String?
+  images  String[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

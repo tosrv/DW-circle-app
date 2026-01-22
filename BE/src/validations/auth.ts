@@ -18,7 +18,7 @@ const passwordField = Joi.string()
   .pattern(new RegExp("^[a-zA-Z0-9]{8,30}$"))
   .required()
   .messages({
-    "string.pattern.base": "Password must be 8-30 alphanumeric cheracters.",
+    "string.pattern.base": "Password must be 8-30 alphanumeric characters.",
   });
 
 export const registerSchema = Joi.object({

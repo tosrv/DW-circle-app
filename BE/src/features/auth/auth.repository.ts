@@ -5,6 +5,13 @@ import { RegisterDTO } from "../../types/auth";
 export async function findUser(username: string) {
   return await prisma.users.findUnique({
     where: { username },
+    select: {
+      id: true,
+      username: true,
+      full_name: true,
+      photo_profile: true,
+      bio: true,
+    },
   });
 }
 
@@ -31,6 +38,18 @@ export async function adduser({
       username: true,
       full_name: true,
       email: true,
+    },
+  });
+}
+
+// Send user data
+export async function findUserData(username: string) {
+  return await prisma.users.findUnique({
+    where: { username },
+    select: {
+      username: true,
+      full_name: true,
+      photo_profile: true,
     },
   });
 }

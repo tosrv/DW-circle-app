@@ -1,8 +1,8 @@
-export function toImageUrl(image?: string | null): string | null {
-  if (!image) return null;
+export function toImageUrl(images: string[]): string[] {
+  if (!images || images.length === 0) return [];
 
   const baseUrl = process.env.BASE_URL;
   if (!baseUrl) throw new Error("BASE_URL is not defined");
 
-  return `${baseUrl}/${image}`;
+  return images.map((image) => `${baseUrl}/${image}`);
 }

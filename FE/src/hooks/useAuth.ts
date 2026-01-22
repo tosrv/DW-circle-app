@@ -1,5 +1,5 @@
-import type { AppDispatch, RootState } from "@/store";
-import { fetchUser, loginUser, logoutUser } from "@/store/authSlice";
+import type { AppDispatch, RootState } from "@/store/store";
+import { fetchUser, loginUser, logoutUser } from "@/store/auth/auth.thunk";
 import { useDispatch, useSelector } from "react-redux";
 
 export const useAuth = () => {

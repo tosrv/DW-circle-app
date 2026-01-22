@@ -28,8 +28,8 @@ CREATE TABLE "Following" (
 CREATE TABLE "Threads" (
     "id" SERIAL NOT NULL,
     "content" TEXT NOT NULL,
-    "image" TEXT,
-    "number_of_replies" INTEGER NOT NULL,
+    "images" TEXT[],
+    "number_of_replies" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "created_by" INTEGER NOT NULL,

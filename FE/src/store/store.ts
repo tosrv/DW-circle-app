@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./authSlice";
+import authReducer from "./auth/auth.slice";
+import threadReducer from "./thread/thread.slice";
+import likeReducer from "./like/like.slice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    thread: threadReducer,
+    likes: likeReducer,
   },
 });
 
