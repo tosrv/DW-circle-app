@@ -22,8 +22,9 @@ model Users {
   followings Following[] @relation("UserFollowing")
   followers  Following[] @relation("UserFollower")
 
-  likes   Likes[]
-  replies Replies[]
+  likes      Likes[]
+  replies    Replies[]
+  replyLikes ReplyLikes[]
 
   threadsCreated Threads[] @relation("ThreadsCreated")
   threadsUpdated Threads[] @relation("ThreadsUpdated")
@@ -105,6 +106,21 @@ model Replies {
   user   Users   @relation(fields: [user_id], references: [id])
   thread Threads @relation(fields: [thread_id], references: [id])
 
-  created Users  @relation("RepliesCreated", fields: [created_by], references: [id])
-  updated Users? @relation("RepliesUpdated", fields: [updated_by], references: [id])
+  created    Users        @relation("RepliesCreated", fields: [created_by], references: [id])
+  updated    Users?       @relation("RepliesUpdated", fields: [updated_by], references: [id])
+  replyLikes ReplyLikes[]
+}
+
+model ReplyLikes {
+  id       Int @id @default(autoincrement())
+  user_id  Int
+  reply_id Int
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user  Users   @relation(fields: [user_id], references: [id])
+  reply Replies @relation(fields: [reply_id], references: [id])
+
+  @@unique([user_id, reply_id])
 }

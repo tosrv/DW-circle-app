@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client";
+import { prisma } from "../../lib/prisma";
 
 // Create new reply
 export async function addReply(

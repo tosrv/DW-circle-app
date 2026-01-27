@@ -27,27 +27,33 @@ export async function addThread(thread: ThreadRequest) {
   });
 }
 
-// Delete thread
-export async function removeThread(threadId: number) {
-  return await api.delete(`/thread/${threadId}`, { withCredentials: true });
-}
+// // Delete thread
+// export async function removeThread(threadId: number) {
+//   return await api.delete(`/thread/${threadId}`, { withCredentials: true });
+// }
 
-// updata thread
-export async function editThread(
-  threadId: number,
-  content: string,
-  image?: string,
-) {
-  const formData = new FormData();
-  formData.append("content", content);
-  if (image) formData.append("image", image);
-  return await api.put(`/thread/${threadId}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-    withCredentials: true,
-  });
-}
+// // updata thread
+// export async function editThread(
+//   threadId: number,
+//   content: string,
+//   image?: string,
+// ) {
+//   const formData = new FormData();
+//   formData.append("content", content);
+//   if (image) formData.append("image", image);
+//   return await api.put(`/thread/${threadId}`, formData, {
+//     headers: { "Content-Type": "multipart/form-data" },
+//     withCredentials: true,
+//   });
+// }
 
 // Likes
 export async function likeThread(threadId: number) {
-  return await api.post(`/like/${threadId}`, {}, { withCredentials: true });
+  return await api.post(`/thread/${threadId}/like`, {}, { withCredentials: true });
+}
+
+
+// Reply likes
+export async function likeReply(replyId:number) {
+  return await api.post(`/reply/${replyId}/like`, {}, { withCredentials: true });
 }

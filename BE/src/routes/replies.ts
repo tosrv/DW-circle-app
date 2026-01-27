@@ -13,10 +13,11 @@ const router = Router();
 router.post(
   "/reply/:id",
   authenticate,
-  upload.array("image", 5),
+  upload.array("image", 4),
   validate(threadSchema),
   createReply,
 );
+
 router.get("/replies/:id", authenticate, getReplies);
 
 export default router;

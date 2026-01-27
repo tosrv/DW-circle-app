@@ -7,8 +7,22 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useEffect, useRef, useState } from "react";
-import type { ThreadDialogProps } from "@/types/props";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+
+export interface ThreadDialogProps {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+
+  image: File[];
+  onImageSelect: (file: File[]) => void;
+  onRemoveImage: (index: number) => void;
+  clearImage: () => void;
+
+  content?: string;
+  setContent?: (value: string) => void;
+
+  newThread: (content: string) => void;
+}
 
 export default function ThreadDialog({
   open,
@@ -68,7 +82,6 @@ export default function ThreadDialog({
       setImageUrl([]);
       return;
     }
-
     const urls = image.map((file) => URL.createObjectURL(file));
     setImageUrl(urls);
     return () => urls.forEach((url) => URL.revokeObjectURL(url));
@@ -76,7 +89,7 @@ export default function ThreadDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="bg-gray-900">
         <input
           type="file"
           onChange={onFileChange}
@@ -98,6 +111,7 @@ export default function ThreadDialog({
               <DialogDescription asChild>
                 <div className="flex flex-col">
                   <textarea
+                    spellCheck={false}
                     value={content}
                     onChange={(e) => setContent?.(e.target.value)}
                     placeholder="What is happening?!"
@@ -107,11 +121,13 @@ export default function ThreadDialog({
 
                   {image.length > 0 && (
                     <>
-                      <div className="grid grid-cols-2 gap-2 mt-3 max-h-96 overflow-scroll">
+                      <div className="grid grid-cols-2 gap-2 mt-2 max-h-96 overflow-scroll">
                         {imageUrl.map((url, i) => (
                           <div key={i} className="relative group">
-                            <img src={url} className="rounded-lg" />
-
+                            <img
+                              src={url}
+                              className="rounded-lg h-full w-full overflow-hidden"
+                            />
                             <button
                               type="button"
                               onClick={() => onRemoveImage(i)}
@@ -156,7 +172,7 @@ export default function ThreadDialog({
               </span>
               <Button
                 type="submit"
-                className="bg-green-700 text-lg rounded-2xl text-gray-300 hover:text-black"
+                className="bg-green-500 text-lg rounded-2xl text-white hover:text-black"
                 disabled={!content}
               >
                 Post

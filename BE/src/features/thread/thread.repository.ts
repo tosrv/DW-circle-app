@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client";
+import { prisma } from "../../lib/prisma";
 
 // Display all threads
 export async function findThreads() {
@@ -86,8 +86,8 @@ export async function findThread(id: number) {
           content: true,
           thread_id: true,
           created_at: true,
+        },
       },
-    },
       created: {
         select: {
           username: true,
@@ -107,7 +107,11 @@ export async function removeThread(id: number) {
 }
 
 // // Update thread
-export async function editThread(id: number, content: string, images: string[]) {
+export async function editThread(
+  id: number,
+  content: string,
+  images: string[],
+) {
   return await prisma.threads.update({
     where: { id },
     data: {
@@ -125,3 +129,40 @@ export async function editThread(id: number, content: string, images: string[]) 
     },
   });
 }
+
+// // Find threads by user
+// export async function findThreadsByUser(userId: number) {
+//   return await prisma.threads.findMany({
+//     where: { created_by: userId },
+//     include: {
+//       created: {
+//         select: {
+//           username: true,
+//           full_name: true,
+//           photo_profile: true,
+//         },
+//       },
+//       likes: {
+//         select: {
+//           user_id: true,
+//           thread_id: true,
+//         },
+//       },
+//       replies: {
+//         select: {
+//           id: true,
+//           content: true,
+//           thread_id: true,
+//           created_at: true,
+//           created: {
+//             select: {
+//               username: true,
+//               full_name: true,
+//               photo_profile: true,
+//             },
+//           },
+//         },
+//       },
+//     },
+//   });
+// }

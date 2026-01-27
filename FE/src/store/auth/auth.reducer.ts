@@ -1,11 +1,12 @@
 import type { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 import type { AuthState } from "@/types/auth";
 import { fetchUser, loginUser, logoutUser } from "./auth.thunk";
+import { editUser } from "../user/user.thunk";
 
 export const authExtraReducers = (
   builder: ActionReducerMapBuilder<AuthState>,
 ) => {
-  // Fetch User
+  // Fetch login user
   builder
     .addCase(fetchUser.pending, (state) => {
       state.loading = true;
@@ -37,5 +38,10 @@ export const authExtraReducers = (
   builder.addCase(logoutUser.fulfilled, (state) => {
     state.user = null;
     state.loading = false;
+  });
+
+  // Update user
+  builder.addCase(editUser.fulfilled, (state, action) => {
+    state.user = action.payload;
   });
 };

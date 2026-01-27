@@ -13,6 +13,9 @@ dist
 dist-ssr
 *.local
 
+BE/public/images/*
+BE/src/lib/seed.ts
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

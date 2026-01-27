@@ -1,5 +1,9 @@
-import type { LikeButtonProps } from "@/types/props";
 import { Heart } from "lucide-react";
+
+export interface LikeButtonProps {
+  isLiked: boolean;
+  onToggle: () => void;
+}
 
 export default function LikeButton({ isLiked, onToggle }: LikeButtonProps) {
   return (

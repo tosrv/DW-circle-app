@@ -25,7 +25,7 @@ router.post(
   createThread,
 );
 
-router.put(
+router.patch(
   "/thread/:id",
   authenticate,
   upload.array("image", 4),

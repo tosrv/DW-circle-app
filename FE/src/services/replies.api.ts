@@ -6,7 +6,6 @@ export async function getReplies(id: number) {
 
 export async function newReply(id: number, content: string, images: File[]) {
   const formData = new FormData();
-
   formData.append("content", content);
   if (images?.length) {
     images.forEach((image) => {

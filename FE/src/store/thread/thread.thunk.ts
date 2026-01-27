@@ -1,9 +1,9 @@
 import {
   addThread,
-  editThread,
+  // editThread,
   getThread,
   getThreads,
-  removeThread,
+  // removeThread,
 } from "@/services/thread.api";
 import type { Thread, ThreadRequest } from "@/types/thread";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -36,20 +36,20 @@ export const createThread = createAsyncThunk<Thread, ThreadRequest>(
 );
 
 
-// Delete thread
-export const deleteThread = createAsyncThunk<Thread, number>(
-  "thread/deleteThread",
-  async (id) => {
-    const res = await removeThread(id);
-    return res.data.data as Thread;
-  },
-);
+// // Delete thread
+// export const deleteThread = createAsyncThunk<Thread, number>(
+//   "thread/deleteThread",
+//   async (id) => {
+//     const res = await removeThread(id);
+//     return res.data.data as Thread;
+//   },
+// );
 
-// Update thread
-export const updateThread = createAsyncThunk<
-  Thread,
-  { id: number; content: string; image?: string }
->("thread/updateThread", async ({ id, content, image }) => {
-  const res = await editThread(id, content, image);
-  return res.data.data as Thread;
-});
+// // Update thread
+// export const updateThread = createAsyncThunk<
+//   Thread,
+//   { id: number; content: string; image?: string }
+// >("thread/updateThread", async ({ id, content, image }) => {
+//   const res = await editThread(id, content, image);
+//   return res.data.data as Thread;
+// });

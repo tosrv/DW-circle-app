@@ -1,18 +1,23 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import { AppError } from "../../utils/error";
-import { adduser, findEmail, findUser } from "./auth.repository";
+import {
+  adduser,
+  findEmail,
+  findUserById,
+  findUserByUsername,
+} from "./auth.repository";
 import { signToken } from "../../utils/jwt";
 import { asyncHandler } from "../../middleawares/async";
+import { singleImageUrl } from "../../utils/imageUrl";
+import { countFollowers, countFollowing } from "../follows/follows.repository";
 
 // Registration
-export const createUser = asyncHandler(
+export const register = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { username, fullname, email, password } = req.body;
 
-    console.log(req.body);
-
-    if (await findUser(username))
+    if (await findUserByUsername(username))
       throw new AppError(409, "Username already used");
     if (await findEmail(email))
       throw new AppError(409, "Email already registered");
@@ -34,7 +39,7 @@ export const createUser = asyncHandler(
 );
 
 // Login
-export const getUser = asyncHandler(
+export const login = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
@@ -51,12 +56,12 @@ export const getUser = asyncHandler(
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      maxAge: 30 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
       status: "success",
-      message: "Logged in",
+      message: "User login successfully",
       data: token,
     });
   },
@@ -65,9 +70,20 @@ export const getUser = asyncHandler(
 // Send user data
 export const sendUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = await findUser((req as any).user.username);
+    const userId = (req as any).user.id;
+    const user = await findUserById(userId);
 
-    res.status(200).json({ user: user });
+    const followersCount = await countFollowers(userId);
+    const followingCount = await countFollowing(userId);
+
+    const data = {
+      ...user,
+      photo_profile: singleImageUrl(user?.photo_profile || ""),
+      followers_count: followersCount,
+      following_count: followingCount,
+    };
+
+    res.status(200).json({ user: data });
   },
 );
 
@@ -82,7 +98,7 @@ export const logout = asyncHandler(
 
     res.status(200).json({
       status: "success",
-      message: "Logout",
+      message: "User logout successfully",
     });
   },
 );

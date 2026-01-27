@@ -9,9 +9,9 @@ import {
 import type { RepliesProps } from "./Replies";
 import { getReplies } from "@/services/replies.api";
 import { useWebSocket } from "@/hooks/useWebSocket";
-import Images from "../costum/Images";
-import LikeButton from "../thread/LikeButton";
-import { Heart, MessageSquareText } from "lucide-react";
+import Images from "../thread/Images";
+import { Heart } from "lucide-react";
+import { likeReply } from "@/services/thread.api";
 
 interface Replies {
   id: number;
@@ -22,32 +22,54 @@ interface Replies {
     full_name: string;
     photo_profile: string;
   };
+  likeCount: number; 
+  isLiked: boolean; 
 }
 
 export default function RepliesList({ threadId }: RepliesProps) {
   const [loading, setLoading] = useState(false);
   const [replies, setReplies] = useState<Replies[]>([]);
-  const [click, setClick] = useState(false);
-  const { send } = useWebSocket({
-    new_reply: (payload) => {
+  const [clickedLikes, setClickedLikes] = useState<{ [key: number]: boolean }>(
+    {},
+  );
+  const [likeCounts, setLikeCounts] = useState<{ [key: number]: number }>({});
+
+  useWebSocket({
+    new_reply: (payload: Replies) => {
       setReplies((prev) => [payload, ...prev]);
+      setLikeCounts((prev) => ({
+        ...prev,
+        [payload.id]: payload.likeCount || 0,
+      }));
+      setClickedLikes((prev) => ({
+        ...prev,
+        [payload.id]: payload.isLiked || false,
+      }));
+    },
+    reply_like: (payload: { replyId: number; likeCount: number }) => {
+      setLikeCounts((prev) => ({
+        ...prev,
+        [payload.replyId]: payload.likeCount,
+      }));
     },
   });
-
-  useEffect(() => {
-    if (!threadId) return;
-    send("new_reply", {
-      id: threadId,
-    });
-  }, [threadId, send]);
 
   useEffect(() => {
     const fetchReplies = async () => {
       try {
         setLoading(true);
         const res = await getReplies(threadId);
+        const repliesData: Replies[] = res.data.data;
+        setReplies(repliesData);
 
-        setReplies(res.data.data);
+        const counts: { [key: number]: number } = {};
+        const clicked: { [key: number]: boolean } = {};
+        repliesData.forEach((r) => {
+          counts[r.id] = r.likeCount ?? 0;
+          clicked[r.id] = r.isLiked ?? false;
+        });
+        setLikeCounts(counts);
+        setClickedLikes(clicked);
       } catch (err) {
         console.error(err);
       } finally {
@@ -57,7 +79,34 @@ export default function RepliesList({ threadId }: RepliesProps) {
     fetchReplies();
   }, [threadId]);
 
-  if (loading) return <div>Loading...</div>;
+  const toggleLike = async (id: number) => {
+    const currentlyLiked = clickedLikes[id];
+
+    setClickedLikes((prev) => ({
+      ...prev,
+      [id]: !currentlyLiked,
+    }));
+    setLikeCounts((prev) => ({
+      ...prev,
+      [id]: prev[id] + (currentlyLiked ? -1 : 1),
+    }));
+
+    try {
+      const res = await likeReply(id);
+      if (res.data.likeCount !== undefined) {
+        setLikeCounts((prev) => ({ ...prev, [id]: res.data.likeCount }));
+      }
+    } catch (err) {
+      console.error(err);
+      setClickedLikes((prev) => ({ ...prev, [id]: currentlyLiked }));
+      setLikeCounts((prev) => ({
+        ...prev,
+        [id]: prev[id] + (currentlyLiked ? 1 : -1),
+      }));
+    }
+  };
+
+  if (loading) return null;
 
   return (
     <ul>
@@ -66,45 +115,52 @@ export default function RepliesList({ threadId }: RepliesProps) {
           <h2 className="text-2xl text-gray-500">No replies yet</h2>
         </div>
       ) : (
-        replies.map((reply) => {
-          return (
-            <li key={reply.id}>
-              <Card className="p-5 rounded-none border-0 border-b-2 bg-transparent">
-                <div className="grid grid-cols-[60px_1fr]">
-                  <section>
-                    <img
-                      src="https://www.svgrepo.com/show/384670/account-avatar-profile-user.svg"
-                      alt="Avatar"
-                      className="w-full rounded-full"
-                    />
-                  </section>
-                  <CardContent className="space-y-1">
-                    <CardHeader className="flex w-full justify-start p-0">
-                      <h3>{reply.created.full_name}</h3>
-                      <h4 className="text-gray-500">
-                        @{reply.created.username}
-                      </h4>
-                    </CardHeader>
-                    <CardDescription>
-                      <p>{reply.content}</p>
-                      {reply.images && <Images images={reply.images} />}
-                    </CardDescription>
-                    <CardAction className="flex space-x-5">
-                      <span onClick={() => setClick(!click)}>
-                        <Heart
-                          className={`transition ${click ? "fill-red-600 text-red-600" : "text-gray-500"}`}
-                        />
-                      </span>
-                      <span>
-                        <MessageSquareText className="text-gray-500" />
-                      </span>
-                    </CardAction>
-                  </CardContent>
-                </div>
-              </Card>
-            </li>
-          );
-        })
+        replies.map((reply) => (
+          <li key={reply.id}>
+            <Card className="p-5 rounded-none border-0 border-b-2 bg-transparent">
+              <div className="grid grid-cols-[60px_1fr]">
+                <section className="h-14 w-14 rounded-full overflow-hidden">
+                  <img
+                    src={
+                      reply.created?.photo_profile
+                        ? reply.created.photo_profile
+                        : "https://www.svgrepo.com/show/384670/account-avatar-profile-user.svg"
+                    }
+                    alt="Avatar"
+                    className="h-full w-full object-cover"
+                  />
+                </section>
+                <CardContent className="space-y-1">
+                  <CardHeader className="flex w-full justify-start p-0 gap-2">
+                    <h3>{reply.created.full_name}</h3>
+                    <h4 className="text-gray-500">@{reply.created.username}</h4>
+                  </CardHeader>
+                  <CardDescription>
+                    <p className="text-lg">{reply.content}</p>
+                    {reply.images && <Images images={reply.images} />}
+                  </CardDescription>
+                  <CardAction className="flex space-x-2 items-center">
+                    <span
+                      onClick={() => toggleLike(reply.id)}
+                      className="cursor-pointer"
+                    >
+                      <Heart
+                        className={`transition ${
+                          clickedLikes[reply.id]
+                            ? "fill-red-600 text-red-600"
+                            : "text-gray-500"
+                        }`}
+                      />
+                    </span>
+                    <span className="text-gray-500">
+                      {likeCounts[reply.id] || 0}
+                    </span>
+                  </CardAction>
+                </CardContent>
+              </div>
+            </Card>
+          </li>
+        ))
       )}
     </ul>
   );

@@ -1,8 +1,8 @@
-import { prisma } from "../../prisma/client";
+import { prisma } from "../../lib/prisma";
 import { RegisterDTO } from "../../types/auth";
 
 // Registration
-export async function findUser(username: string) {
+export async function findUserByUsername(username: string) {
   return await prisma.users.findUnique({
     where: { username },
     select: {
@@ -42,14 +42,15 @@ export async function adduser({
   });
 }
 
-// Send user data
-export async function findUserData(username: string) {
+export async function findUserById(id: number) {
   return await prisma.users.findUnique({
-    where: { username },
+    where: { id },
     select: {
+      id: true,
       username: true,
       full_name: true,
       photo_profile: true,
+      bio: true,
     },
   });
 }

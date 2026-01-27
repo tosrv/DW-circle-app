@@ -1,12 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../../middleawares/async";
-import { prisma } from "../../prisma/client";
+import { prisma } from "../../lib/prisma";
 import { broadcastEvent } from "../../sockets/websocket";
+import { requireThread } from "../thread/thread.controller";
 
 export const getLikes = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = Number((req as any).user.id);
     const threadId = Number(req.params.id);
+
+    await requireThread(threadId);
 
     const existingLike = await prisma.likes.findUnique({
       where: {
@@ -53,6 +56,70 @@ export const getLikes = asyncHandler(
     res.status(200).json({
       status: "success",
       message: isLiked ? "Thread liked" : "Thread unliked",
+      isLiked,
+      likeCount,
+    });
+  },
+);
+
+export const replyLikes = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = Number((req as any).user.id);
+    const replyId = Number(req.params.id);
+
+    const reply = await prisma.replies.findUnique({
+      where: { id: replyId },
+    });
+
+    if (!reply) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Reply not found" });
+    }
+
+    const existingLike = await prisma.replyLikes.findUnique({
+      where: {
+        user_id_reply_id: {
+          user_id: userId,
+          reply_id: replyId,
+        },
+      },
+    });
+
+    let isLiked: boolean;
+
+    if (existingLike) {
+      await prisma.replyLikes.delete({
+        where: {
+          user_id_reply_id: {
+            user_id: userId,
+            reply_id: replyId,
+          },
+        },
+      });
+      isLiked = false;
+    } else {
+      await prisma.replyLikes.create({
+        data: {
+          user_id: userId,
+          reply_id: replyId,
+        },
+      });
+      isLiked = true;
+    }
+
+    const likeCount = await prisma.replyLikes.count({
+      where: { reply_id: replyId },
+    });
+
+    broadcastEvent("reply_like", {
+      replyId,
+      likeCount
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: isLiked ? "Reply liked" : "Reply unliked",
       isLiked,
       likeCount,
     });

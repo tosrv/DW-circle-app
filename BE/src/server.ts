@@ -2,14 +2,24 @@ import http from "http";
 import app from "./app";
 import dotenv from "dotenv";
 import { initWebSocket } from "./sockets/websocket";
+import { initRedis } from "./lib/redis";
 
-dotenv.config(); 
+dotenv.config();
 
 const server = http.createServer(app);
-const port = process.env.PORT;
+const port = Number(process.env.PORT) || 3000;
 
-initWebSocket(server);
+async function bootstrap() {
+  await initRedis();
 
-server.listen(port, () => {
-    console.log(`Server running`);
+  initWebSocket(server);
+
+  server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
+
+bootstrap().catch((err) => {
+  console.error("Failed to start server:", err);
+  process.exit(1);
 });

@@ -2,12 +2,14 @@ import { ImagePlus } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { useRef, useState } from "react";
+import { useProfile } from "@/context/ProfileProvider";
 
 interface ReplyFormProps {
   onSubmit: (content: string, images: File[]) => void;
   loading: boolean;
 }
 export default function ReplyForm({ onSubmit, loading }: ReplyFormProps) {
+  const { user } = useProfile();
   const [content, setContent] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -18,6 +20,9 @@ export default function ReplyForm({ onSubmit, loading }: ReplyFormProps) {
 
   const handleImageSelect = (files: File[]) => {
     setImages((prev) => [...prev, ...files]);
+  };
+  const handleRemoveImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,39 +43,60 @@ export default function ReplyForm({ onSubmit, loading }: ReplyFormProps) {
   return (
     <div className="">
       <Card className="p-5 rounded-none border-0 border-b-2 bg-transparent">
-        <div className="grid grid-cols-[60px_1fr]">
-          <section>
-            <img
-              src="https://www.svgrepo.com/show/384670/account-avatar-profile-user.svg"
-              alt="Avatar"
-              className="w-full rounded-full"
-            />
-          </section>
+        <div className="grid grid-cols-[70px_1fr]">
+          <div className="flex items-center">
+            <section className="h-17 w-17 border-2 border-white rounded-full overflow-hidden">
+              <img
+                src={
+                  user?.photo_profile
+                    ? user.photo_profile
+                    : "https://www.svgrepo.com/show/384670/account-avatar-profile-user.svg"
+                }
+                alt="Avatar"
+                className="h-full w-full object-cover"
+              />
+            </section>
+          </div>
           <CardContent>
             <form
               className="flex w-full h-full justify-between items-center"
               onSubmit={handleSubmit}
             >
-              <input
-                type="text"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Type your reply!"
-                className="text-lg border-none focus:outline-none bg-transparent w-8/10 "
-              />
+              <div className="flex w-9/10 space-x-2">
+                <section className="h-20 w-auto overflow-scroll">
+                  {images.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {images.map((image, i) => (
+                        <div key={i} className="relative group">
+                          <img
+                            src={URL.createObjectURL(image)}
+                            alt="Image"
+                            className="w-20 h-20 object-cover rounded-md"
+                          />
 
-              {images.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={URL.createObjectURL(image)}
-                      alt="Image"
-                      className="w-20 h-20 object-cover"
-                    />
-                  ))}
-                </div>
-              )}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(i)}
+                            className="absolute top-1 right-1 bg-black/60 text-white rounded-full px-1
+        opacity-0 group-hover:opacity-100 transition"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+
+                <textarea
+                  spellCheck={false}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  required
+                  placeholder="Type your reply!"
+                  className="text-lg border-none focus:outline-none bg-transparent h-full resize-none overflow-scroll"
+                />
+              </div>
 
               <div className="flex items-center space-x-3">
                 <span

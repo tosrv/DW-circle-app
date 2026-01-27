@@ -6,6 +6,8 @@ export interface Thread {
   content: string;
   images?: string[];
   created: User;
+  created_at: string;
+  created_by: number;
   likes?: Like[];
   replies?: Replies[];
 }
