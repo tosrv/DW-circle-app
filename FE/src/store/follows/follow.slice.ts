@@ -14,7 +14,7 @@ const followsSlice = createSlice({
   name: "follows",
   initialState,
   reducers: {
-    updateUser: (
+    updateCount: (
       state,
       action: PayloadAction<{ userId: number; updates: Partial<User> }>,
     ) => {
@@ -61,6 +61,6 @@ const followsSlice = createSlice({
   extraReducers: followsExtraReducers,
 });
 
-export const { updateUser, toggleFollowListOnly, updateFollowersList } =
+export const { updateCount, toggleFollowListOnly, updateFollowersList } =
   followsSlice.actions;
 export default followsSlice.reducer;

@@ -8,12 +8,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useRef, useState } from "react";
-import { usernameCheck } from "@/services/user.api";
+import { updateUser, usernameCheck } from "@/services/user.api";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/store/store";
-import { editUser } from "@/store/user/user.thunk";
 import { useProfile } from "@/context/ProfileProvider";
 import { ImagePlus } from "lucide-react";
+import { notifyError, notifySuccess } from "@/lib/toast";
+import { editUser } from "@/store/auth/auth.slice";
 
 export function EditDialog() {
   const { user, setUser, editDialogOpen, setEditDialogOpen } = useProfile();
@@ -99,31 +100,42 @@ export function EditDialog() {
     });
   };
 
+  useEffect(() => {
+    return () => {
+      if (avatarImage) URL.revokeObjectURL(avatarImage as any);
+    };
+  }, [avatarImage]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!available) return;
 
     try {
-      const updated = await dispatch(
-        editUser({
-          username: form.username,
-          fullname: form.name,
-          bio: form.bio,
-          image: avatarImage,
-        }),
-      ).unwrap();
-
-      setUser((prev) => {
-        if (!prev) return updated;
-        return {
-          ...prev,
-          ...updated,
-        };
+      const res = await updateUser({
+        username: form.username,
+        fullname: form.name,
+        bio: form.bio,
+        image: avatarImage,
       });
 
+      if (res.data.error) {
+        notifyError(res.data.error);
+        return;
+      }
+
+      const updated = res.data.data;
+      dispatch(editUser(updated));
+
+      setUser((prev) => (prev ? { ...prev, ...updated } : updated));
       setEditDialogOpen(false);
-    } catch (error) {
+      notifySuccess("Profile updated!");
+    } catch (error: any) {
       console.error(error);
+      if (error.response?.data?.error) {
+        notifyError(error.response.data.error);
+      } else {
+        notifyError("Failed to update profile.");
+      }
     }
   };
 
@@ -193,7 +205,6 @@ export function EditDialog() {
                     spellCheck={false}
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="name at least 6 characters"
                     required
                     className="w-full resize-none border-none focus:outline-none h-8"
                   />
@@ -211,7 +222,6 @@ export function EditDialog() {
                     onChange={(e) =>
                       setForm({ ...form, username: e.target.value })
                     }
-                    placeholder="username at least 3 characters"
                     required
                     className="w-full resize-none border-none focus:outline-none h-8"
                   />
@@ -237,7 +247,6 @@ export function EditDialog() {
                     spellCheck={false}
                     value={form.bio}
                     onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                    placeholder="bio at least 3 characters"
                     required
                     className="w-full resize-none border-none focus:outline-none h-24"
                   />
@@ -252,7 +261,7 @@ export function EditDialog() {
               type="submit"
               disabled={requirements}
               className={`bg-green-500 text-lg rounded-2xl text-white hover:text-black ${
-                checking || !available ? "opacity-50 cursor-not-allowed" : ""
+                requirements ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
               Save

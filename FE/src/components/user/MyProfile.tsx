@@ -4,7 +4,7 @@ import { useProfile } from "@/context/ProfileProvider";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/store/store";
-import { updateUser } from "@/store/follows/follow.slice";
+import { updateCount } from "@/store/follows/follow.slice";
 
 export default function MyProfile() {
   const { user, setUser, setEditDialogOpen } = useProfile();
@@ -16,7 +16,7 @@ export default function MyProfile() {
     {
       followers_update: (payload) => {
         dispatch(
-          updateUser({
+          updateCount({
             userId: payload.userId,
             updates: { followers_count: payload.followersCount },
           }),
@@ -27,7 +27,7 @@ export default function MyProfile() {
       },
       following_update: (payload) => {
         dispatch(
-          updateUser({
+          updateCount({
             userId: payload.userId,
             updates: { following_count: payload.followingCount },
           }),

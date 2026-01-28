@@ -3,6 +3,7 @@ import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { useRef, useState } from "react";
 import { useProfile } from "@/context/ProfileProvider";
+import { notifyError, notifySuccess, notifyWarn } from "@/lib/toast";
 
 interface ReplyFormProps {
   onSubmit: (content: string, images: File[]) => void;
@@ -27,7 +28,19 @@ export default function ReplyForm({ onSubmit, loading }: ReplyFormProps) {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    handleImageSelect(Array.from(e.target.files));
+
+    const files = Array.from(e.target.files);
+
+    if (images.length + files.length > 4) {
+      notifyWarn("Maximum 4 images!");
+      e.currentTarget.value = "";
+      return;
+    }
+
+    handleImageSelect(files);
+
+    files.forEach(() => notifySuccess("Image uploaded!"));
+
     e.currentTarget.value = "";
   };
 
@@ -35,9 +48,15 @@ export default function ReplyForm({ onSubmit, loading }: ReplyFormProps) {
     e.preventDefault();
     if (!content.trim()) return;
 
-    onSubmit(content, images);
-    setImages([]);
-    setContent("");
+    try {
+      onSubmit(content, images);
+      setImages([]);
+      setContent("");
+
+      notifySuccess("New reply created!");
+    } catch (err) {
+      notifyError("Failed to create reply!");
+    }
   };
 
   return (

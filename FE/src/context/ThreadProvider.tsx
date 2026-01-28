@@ -10,7 +10,6 @@ interface ThreadDialogContextType {
   removeImage: (index: number) => void;
   clearImages: () => void;
   content: string;
-  notif: boolean;
 }
 
 const ThreadDialogContext = createContext<ThreadDialogContextType | undefined>(
@@ -21,7 +20,6 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
   const [images, setImages] = useState<File[]>([]);
-  const [notif, setNotif] = useState(false);
   const { createThread } = useThread();
 
   const openThreadDialog = () => setOpen(true);
@@ -33,12 +31,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
   const clearImages = () => setImages([]);
 
   const newThread = async (content: string) => {
-    const res = await createThread({ content, images });
-
-    if (res) {
-      setNotif(true);
-      setTimeout(() => setNotif(false), 3000);
-    }
+    await createThread({ content, images });
     setOpen(false);
     clearImages();
     setContent("");
@@ -54,7 +47,6 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
         removeImage,
         clearImages,
         content,
-        notif,
       }}
     >
       {children}
@@ -64,7 +56,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
         onOpenChange={setOpen}
         content={content}
         setContent={setContent}
-        image={images}
+        images={images}
         onImageSelect={addImages}
         onRemoveImage={removeImage}
         clearImage={clearImages}

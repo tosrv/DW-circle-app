@@ -8,12 +8,13 @@ import {
 import { Button } from "../ui/button";
 import { useEffect, useRef, useState } from "react";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+import { notifyError, notifySuccess, notifyWarn } from "@/lib/toast";
 
 export interface ThreadDialogProps {
   open: boolean;
   onOpenChange: (v: boolean) => void;
 
-  image: File[];
+  images: File[];
   onImageSelect: (file: File[]) => void;
   onRemoveImage: (index: number) => void;
   clearImage: () => void;
@@ -27,7 +28,7 @@ export interface ThreadDialogProps {
 export default function ThreadDialog({
   open,
   onOpenChange,
-  image,
+  images,
   onImageSelect,
   onRemoveImage,
   clearImage,
@@ -35,57 +36,53 @@ export default function ThreadDialog({
   setContent,
   newThread,
 }: ThreadDialogProps) {
-  const [msg, setMsg] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    onImageSelect(Array.from(e.target.files));
+
+    const files = Array.from(e.target.files);
+
+    if (images.length + files.length > 4) {
+      notifyWarn("Maximum 4 images!");
+      e.currentTarget.value = "";
+      return;
+    }
+
+    onImageSelect(files);
+
+    files.forEach(() => notifySuccess("Image uploaded!"));
+
     e.currentTarget.value = "";
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!content) return;
-    newThread(content);
-    setContent?.("");
-    clearImage?.();
+
+    try {
+      newThread(content);
+      setContent?.("");
+      clearImage?.();
+
+      notifySuccess("New thread created!");
+    } catch (err) {
+      notifyError("Failed to create thread!");
+    }
   };
 
   useEffect(() => {
-    setMsg((prev) => image.map((_, i) => prev[i] || ""));
-  }, [image]);
-
-  useEffect(() => {
-    image.forEach((_, index) => {
-      if (msg[index]) return;
-
-      const showTimer = setTimeout(() => {
-        setMsg((prev) =>
-          prev.map((m, i) => (i === index ? "Image uploaded!" : m)),
-        );
-
-        const hideTimer = setTimeout(() => {
-          setMsg((prev) => prev.map((m, i) => (i === index ? "" : m)));
-        }, 3000);
-
-        return () => clearTimeout(hideTimer);
-      }, 5000);
-
-      return () => clearTimeout(showTimer);
-    });
-  }, [image]);
-
-  useEffect(() => {
-    if (!image.length) {
+    if (!images.length) {
       setImageUrl([]);
       return;
     }
-    const urls = image.map((file) => URL.createObjectURL(file));
+
+    const urls = images.map((file) => URL.createObjectURL(file));
     setImageUrl(urls);
+
     return () => urls.forEach((url) => URL.revokeObjectURL(url));
-  }, [image]);
+  }, [images]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -94,7 +91,7 @@ export default function ThreadDialog({
           type="file"
           onChange={onFileChange}
           ref={fileRef}
-          accept="image/*"
+          accept="images/*"
           hidden
           multiple
         />
@@ -119,35 +116,25 @@ export default function ThreadDialog({
                     className="w-full resize-none border-none focus:outline-none h-fit overflow-scroll text-lg p-2"
                   />
 
-                  {image.length > 0 && (
-                    <>
-                      <div className="grid grid-cols-2 gap-2 mt-2 max-h-96 overflow-scroll">
-                        {imageUrl.map((url, i) => (
-                          <div key={i} className="relative group">
-                            <img
-                              src={url}
-                              className="rounded-lg h-full w-full overflow-hidden"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => onRemoveImage(i)}
-                              className="absolute top-2 right-2 bg-black/60 text-white rounded-full px-1
-        opacity-0 group-hover:opacity-100 transition"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div>
-                        {msg.find((m) => m) && (
-                          <span className="absolute text-sm text-green-500">
-                            {msg.find((m) => m)}
-                          </span>
-                        )}
-                      </div>
-                    </>
+                  {images.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2 mt-2 max-h-96 overflow-scroll">
+                      {imageUrl.map((url, i) => (
+                        <div key={i} className="relative group">
+                          <img
+                            src={url}
+                            className="rounded-lg h-full w-full overflow-hidden"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => onRemoveImage(i)}
+                            className="absolute top-2 right-2 bg-black/60 text-white rounded-full px-1
+                              opacity-0 group-hover:opacity-100 transition"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </DialogDescription>
@@ -158,12 +145,10 @@ export default function ThreadDialog({
             <div className="flex justify-between items-center w-full mt-3 px-5">
               <span
                 onClick={() => {
-                  if (image.length < 4) {
-                    fileRef.current?.click();
-                  }
+                  fileRef.current?.click();
                 }}
                 className={
-                  image.length < 4
+                  images.length < 4
                     ? "text-green-600 hover:cursor-pointer"
                     : "text-green-800"
                 }

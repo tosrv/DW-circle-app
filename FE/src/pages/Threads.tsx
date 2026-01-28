@@ -1,4 +1,4 @@
-import { Check, ImagePlus } from "lucide-react";
+import { ImagePlus } from "lucide-react";
 import { Button } from "../components/ui/button";
 import ThreadsLists from "../components/thread/ThreadsLists";
 import { Card, CardContent } from "../components/ui/card";
@@ -6,12 +6,13 @@ import { useRef, useEffect } from "react";
 import { useThread } from "@/hooks/useThread";
 import { useThreadDialog } from "@/context/ThreadProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { notifySuccess } from "@/lib/toast";
 
 export default function Threads() {
   const { user } = useAuth();
   const { threads, fetchThreads } = useThread();
   const fileRef = useRef<HTMLInputElement>(null);
-  const { openThreadDialog, addImages, content, notif } = useThreadDialog();
+  const { openThreadDialog, addImages, content } = useThreadDialog();
 
   useEffect(() => {
     fetchThreads();
@@ -25,6 +26,9 @@ export default function Threads() {
     if (!e.target.files) return;
     addImages(Array.from(e.target.files));
     openThreadDialog();
+
+    notifySuccess("Image uploaded!");
+
     e.currentTarget.value = "";
   };
 
@@ -32,12 +36,6 @@ export default function Threads() {
 
   return (
     <div>
-      {notif && (
-        <div className="absolute bottom-5 right-5 z-10 flex items-center space-x-2 bg-green-500 opacity-90 text-white px-4 py-2 rounded-3xl font-bold">
-          <Check className="h-6 w-6 text-white font-bold" />
-          <span>New thread added !</span>
-        </div>
-      )}
       <Card className="p-5 rounded-none border-0 border-b-2 bg-transparent shadow-none">
         <div className="grid grid-cols-[60px_1fr]">
           <section className="h-17 w-17 rounded-full overflow-hidden border-2 border-white">
