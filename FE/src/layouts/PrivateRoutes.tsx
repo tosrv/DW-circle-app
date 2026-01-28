@@ -1,23 +1,32 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useLogout } from "@/hooks/useLogout";
+import { getMe, logout } from "@/services/auth.api";
 import { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 export default function PrivateRoute() {
   const { user, loading, fetchUser } = useAuth();
   const location = useLocation();
-  
-  useLogout();
 
   useEffect(() => {
     fetchUser();
   }, []);
+  
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        await getMe();
+      } catch {
+        logout();
+      }
+    };
+    checkToken();
+  }, [logout]);
 
   if (loading) return null;
   if (!user)
     return (
       <Navigate
-        to="/login"
+        to="/"
         replace
         state={{
           from: location,

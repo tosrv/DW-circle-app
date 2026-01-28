@@ -20,8 +20,8 @@ export function EditDialog() {
   const { user, setUser, editDialogOpen, setEditDialogOpen } = useProfile();
   const [available, setAvailable] = useState(false);
   const [avatarImage, setAvatarImage] = useState<File | undefined>(undefined);
-  const fileRef = useRef<HTMLInputElement>(null);
   const [checking, setChecking] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch<AppDispatch>();
 

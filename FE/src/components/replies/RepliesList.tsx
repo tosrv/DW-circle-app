@@ -12,6 +12,7 @@ import { useWebSocket } from "@/hooks/useWebSocket";
 import Images from "../thread/Images";
 import { Heart } from "lucide-react";
 import { likeReply } from "@/services/thread.api";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface Replies {
   id: number;
@@ -22,8 +23,8 @@ interface Replies {
     full_name: string;
     photo_profile: string;
   };
-  likeCount: number; 
-  isLiked: boolean; 
+  likeCount: number;
+  isLiked: boolean;
 }
 
 export default function RepliesList({ threadId }: RepliesProps) {
@@ -33,6 +34,8 @@ export default function RepliesList({ threadId }: RepliesProps) {
     {},
   );
   const [likeCounts, setLikeCounts] = useState<{ [key: number]: number }>({});
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useWebSocket({
     new_reply: (payload: Replies) => {
@@ -106,6 +109,13 @@ export default function RepliesList({ threadId }: RepliesProps) {
     }
   };
 
+  const handleProfile = (username: string) => {
+    const url = `/profile/${username}`;
+    if (location.pathname !== url) {
+      navigate(url);
+    }
+  };
+
   if (loading) return null;
 
   return (
@@ -130,9 +140,9 @@ export default function RepliesList({ threadId }: RepliesProps) {
                     className="h-full w-full object-cover"
                   />
                 </section>
-                <CardContent className="space-y-1">
+                <CardContent className="space-y-1 flex flex-col justify-start">
                   <CardHeader className="flex w-full justify-start p-0 gap-2">
-                    <h3>{reply.created.full_name}</h3>
+                    <h3 onClick={() => handleProfile(reply.created.username)} className="hover:cursor-pointer">{reply.created.full_name}</h3>
                     <h4 className="text-gray-500">@{reply.created.username}</h4>
                   </CardHeader>
                   <CardDescription>

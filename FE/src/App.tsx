@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
 
@@ -12,6 +12,7 @@ import PrivateRoute from "@/layouts/PrivateRoutes";
 import Dashboard from "@/layouts/Dashboard";
 import Follows from "./pages/Follows";
 import Search from "./pages/Search";
+import Landing from "./pages/Landing";
 
 function App() {
   return (
@@ -19,19 +20,23 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
 
           {/* Private Routes */}
           <Route element={<PrivateRoute />}>
             <Route element={<Dashboard />}>
-              <Route path="/" element={<Threads />} />
+              <Route path="/home" element={<Threads />} />
               <Route path="/thread/:id" element={<ThreadDetail />} />
               <Route path="/profile/:username" element={<Profile />} />
               <Route path="/follows" element={<Follows />} />
               <Route path="/search" element={<Search />} />
             </Route>
           </Route>
+
+          {/* Redirect all unknown routes to "/" */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </Provider>

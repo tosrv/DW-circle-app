@@ -1,7 +1,6 @@
 import { FaGithub } from "react-icons/fa";
 import { BiLogoInstagramAlt } from "react-icons/bi";
 import { FaLinkedin } from "react-icons/fa6";
-import { Link } from "react-router-dom";
 
 export default function Mark() {
   return (
@@ -13,15 +12,27 @@ export default function Mark() {
 
           <span>󠁯•󠁏</span>
           <div className="flex gap-1 items-center">
-            <Link to="https://github.com/tosrv">
+            <a
+              href="https://github.com/tosrv"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaGithub className="h-6 w-6 hover:text-white" />
-            </Link>
-            <Link to="https://www.instagram.com/rahmat_tomy">
+            </a>
+            <a
+              href="https://www.instagram.com/rahmat_tomy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <BiLogoInstagramAlt className="h-7 w-7 hover:text-white" />
-            </Link>
-            <Link to="https://www.linkedin.com/in/rahmat-tomy-apriliyanto-445a34382">
+            </a>
+            <a
+              href="https://www.linkedin.com/in/rahmat-tomy-apriliyanto-445a34382"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaLinkedin className="h-6 w-6 hover:text-white" />
-            </Link>
+            </a>
           </div>
         </h2>
       </section>
@@ -35,9 +46,14 @@ export default function Mark() {
               className="w-5"
             />
           </span>
-          <Link to="https://dumbways.id/" className="hover:text-white">
+          <a
+            href="https://dumbways.id/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white"
+          >
             Dumbways&nbsp;Indonesia
-          </Link>
+          </a>
           <span>󠁯•󠁏</span>
           <span>#1&nbsp;Coding&nbsp;Bootcamp</span>
         </h3>

@@ -9,6 +9,7 @@ import { Button } from "../ui/button";
 import { useEffect, useRef, useState } from "react";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { notifyError, notifySuccess, notifyWarn } from "@/lib/toast";
+import { useProfile } from "@/context/ProfileProvider";
 
 export interface ThreadDialogProps {
   open: boolean;
@@ -38,6 +39,7 @@ export default function ThreadDialog({
 }: ThreadDialogProps) {
   const [imageUrl, setImageUrl] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { user } = useProfile();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -100,7 +102,7 @@ export default function ThreadDialog({
             <div className="grid grid-cols-[70px_1fr] mb-5 space-x-3">
               <DialogTitle>
                 <img
-                  src="https://www.svgrepo.com/show/384670/account-avatar-profile-user.svg"
+                  src={user?.photo_profile}
                   alt="Avatar"
                   className="w-full rounded-full"
                 />
@@ -113,11 +115,11 @@ export default function ThreadDialog({
                     onChange={(e) => setContent?.(e.target.value)}
                     placeholder="What is happening?!"
                     required
-                    className="w-full resize-none border-none focus:outline-none h-fit overflow-scroll text-lg p-2"
+                    className="w-full resize-none border-none focus:outline-none h-fit overflow-auto text-lg p-2"
                   />
 
                   {images.length > 0 && (
-                    <div className="grid grid-cols-2 gap-2 mt-2 max-h-96 overflow-scroll">
+                    <div className="grid grid-cols-2 gap-2 mt-2 max-h-96 overflow-auto">
                       {imageUrl.map((url, i) => (
                         <div key={i} className="relative group">
                           <img

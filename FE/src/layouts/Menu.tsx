@@ -12,7 +12,7 @@ export default function Menu() {
   const { openThreadDialog } = useThreadDialog();
 
   const menu = [
-    { icon: <House />, label: "Home", path: "/" },
+    { icon: <House />, label: "Home", path: "/home" },
     { icon: <Search />, label: "Search", path: "/search" },
     { icon: <Heart />, label: "Follows", path: "/follows" },
     {

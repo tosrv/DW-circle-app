@@ -7,7 +7,7 @@ export default function Navbar() {
   const { profile } = useProfile();
 
   const getTitle = () => {
-    if (location.pathname === "/") return "Home";
+    if (location.pathname === "/home") return "Home";
     if (location.pathname.startsWith("/thread")) return "Threads";
     if (location.pathname.startsWith("/profile")) return profile || "Profile";
     if (location.pathname.startsWith("/follows")) return "Follows";
@@ -21,7 +21,7 @@ export default function Navbar() {
 
   return (
     <div className="flex items-center sticky top-0 backdrop-blur-md p-3 z-10 space-x-2">
-      {location.pathname !== "/" && (
+      {location.pathname !== "/home" && (
         <button
           onClick={back}
           className="hover:cursor-pointer font-bold text-xl text-gray-500 hover:text-white"

@@ -82,7 +82,7 @@ export default function ReplyForm({ onSubmit, loading }: ReplyFormProps) {
               onSubmit={handleSubmit}
             >
               <div className="flex w-9/10 space-x-2">
-                <section className="h-20 w-auto overflow-scroll">
+                <section className="h-20 w-auto">
                   {images.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {images.map((image, i) => (
@@ -113,7 +113,7 @@ export default function ReplyForm({ onSubmit, loading }: ReplyFormProps) {
                   onChange={(e) => setContent(e.target.value)}
                   required
                   placeholder="Type your reply!"
-                  className="text-lg border-none focus:outline-none bg-transparent h-full resize-none overflow-scroll"
+                  className="text-lg border-none focus:outline-none bg-transparent h-full resize-none overflow-auto"
                 />
               </div>
 

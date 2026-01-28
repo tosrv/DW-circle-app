@@ -5,11 +5,11 @@ import { Card, CardContent } from "../components/ui/card";
 import { useRef, useEffect } from "react";
 import { useThread } from "@/hooks/useThread";
 import { useThreadDialog } from "@/context/ThreadProvider";
-import { useAuth } from "@/hooks/useAuth";
 import { notifySuccess } from "@/lib/toast";
+import { useProfile } from "@/context/ProfileProvider";
 
 export default function Threads() {
-  const { user } = useAuth();
+  const { user } = useProfile();
   const { threads, fetchThreads } = useThread();
   const fileRef = useRef<HTMLInputElement>(null);
   const { openThreadDialog, addImages, content } = useThreadDialog();

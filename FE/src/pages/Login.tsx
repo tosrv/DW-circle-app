@@ -33,7 +33,7 @@ export default function Login() {
       await login(email, password).unwrap();
       setEmail("");
       setPassword("");
-      navigate("/");
+      navigate("/home");
     } catch (err: any) {
       setMsg(err);
     } finally {

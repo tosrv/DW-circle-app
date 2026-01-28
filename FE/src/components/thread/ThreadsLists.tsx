@@ -118,7 +118,7 @@ export default function ThreadsLists({ threads }: ThreadsProps) {
                     className="h-full w-full object-cover"
                   />
                 </section>
-                <CardContent className="space-y-1">
+                <CardContent className="flex flex-col justify-start space-y-1">
                   <CardHeader className="flex w-full justify-start p-0">
                     <h3
                       onClick={() => handleProfile(thread.created.username)}
