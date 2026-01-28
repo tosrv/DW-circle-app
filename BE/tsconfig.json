@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "module": "nodenext",
-    "target": "esnext",
+    "module": "es2020",
+    "target": "es2020",
+    "outDir": "dist",
+    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

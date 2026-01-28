@@ -5,15 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev": "ts-node-dev --respawn --watch src --poll src/server.ts"
-  },
-  "prisma": {
-    "seed": "ts-node src/lib/seed.ts"
+    "dev": "ts-node-dev --respawn --watch src --poll src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@prisma/client": "^6.19.2",
     "bcrypt": "^6.0.0",

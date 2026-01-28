@@ -2,7 +2,7 @@ import express, { json } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "./swagger";
+import { swaggerSpec } from "./swagger/index";
 
 import { allowCors } from "./middleawares/cors";
 import { errorHandler } from "./middleawares/error";
