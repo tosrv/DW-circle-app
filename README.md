@@ -11,12 +11,17 @@
 
 ---
 
+## Demo
+[🚀 Live Demo on Netlify](https://app-circle.netlify.app/)
+
+---
+
 ## Table of Contents
+- [Demo](#demo)
 - [About](#about)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
-- [Demo](#demo)
 
 ---
 
@@ -53,6 +58,3 @@ npm start
 ```
 
 ---
-
-## Demo
-[🚀 Live Demo on Netlify](https://app-circle.netlify.app/)
