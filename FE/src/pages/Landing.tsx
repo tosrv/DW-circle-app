@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import homeImg from "../assets/home.png";
-import followsImg from "../assets/follows.png";
 import profileImg from "../assets/profile.png";
+import demoGif from "../assets/Cicle.gif";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -38,14 +38,14 @@ export default function Landing() {
               Let's Make and Join Our Circle
             </h3>
           </div>
-          <div className="flex space-x-5">
+          <div className="flex flex-wrap justify-center space-x-5 space-y-5">
             <img
               src={homeImg}
               alt="Circle Home"
               className="h-70 w-auto rounded-xl border hover:scale-102 transition-transform duration-300"
             />
             <img
-              src={followsImg}
+              src={demoGif}
               alt="Circle Follows"
               className="h-70 w-auto rounded-xl border hover:scale-102 transition-transform duration-300"
             />

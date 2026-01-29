@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "start": "concurrently \"npm --prefix FE run dev\" \"npm --prefix BE run dev\"",
     "dev": "concurrently \"npm --prefix FE run dev\" \"npm --prefix BE run dev\""
   },
   "devDependencies": {

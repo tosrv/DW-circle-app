@@ -7,7 +7,8 @@
     "test": "jest",
     "dev": "ts-node-dev --respawn --watch src --poll src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
