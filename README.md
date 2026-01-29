@@ -16,9 +16,7 @@
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Demo](#demo)
-- [License](#license)
 
 ---
 
