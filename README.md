@@ -1,4 +1,4 @@
-# Cicle 🌐
+# Circle
 > Social media app to create your own circle
 
 ![Demo Animasi](./demo/Cicle.gif)
